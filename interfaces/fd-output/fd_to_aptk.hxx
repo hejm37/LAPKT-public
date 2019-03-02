@@ -26,55 +26,60 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <strips_prob.hxx>
 
-namespace aptk {
-namespace FD_Parser {
+namespace aptk
+{
+namespace FD_Parser
+{
 
-struct TransID {
+struct TransID
+{
 	int src, dst;
-	bool operator<(const TransID& other) const {
+	bool operator<(const TransID &other) const
+	{
 		return src < other.src || (src == other.src && dst < other.dst);
 	}
 };
 
-struct DTG {
+struct DTG
+{
 
 	std::vector<unsigned> values;
-	std::multimap< TransID, unsigned > edges;
-	std::multimap< unsigned, TransID > ops;
+	std::multimap<TransID, unsigned> edges;
+	std::multimap<unsigned, TransID> ops;
 
-	typedef std::multimap< TransID, unsigned>::const_iterator edge_it;
-	typedef std::multimap< unsigned, TransID>::const_iterator op_it;
+	typedef std::multimap<TransID, unsigned>::const_iterator edge_it;
+	typedef std::multimap<unsigned, TransID>::const_iterator op_it;
 
 	int init_idx, goal_idx;
 	bool unsafe;
 
-	template<class iter>
-	struct range {
+	template <class iter>
+	struct range
+	{
 		iter _begin, _end;
-		iter begin(){ return _begin; }
-		iter end(){ return _end; }
+		iter begin() { return _begin; }
+		iter end() { return _end; }
 	};
 
-	range<edge_it> adjacent(int node){
+	range<edge_it> adjacent(int node)
+	{
 		TransID min = {node, 0};
 		TransID max = {node, (int)values.size()};
-		range<edge_it> ret = { edges.lower_bound(min), edges.upper_bound(max) };
+		range<edge_it> ret = {edges.lower_bound(min), edges.upper_bound(max)};
 		return ret;
 	}
-	range<op_it> transitions(unsigned op){
-		range<op_it> ret = { ops.lower_bound(op), ops.upper_bound(op) };
+	range<op_it> transitions(unsigned op)
+	{
+		range<op_it> ret = {ops.lower_bound(op), ops.upper_bound(op)};
 		return ret;
 	}
-
-
 };
 
+void get_problem_description(std::string fd_output, STRIPS_Problem &prob, std::vector<DTG> &dtgs);
 
-void get_problem_description(std::string fd_output, STRIPS_Problem& prob, std::vector<DTG>& dtgs);
+void get_problem_description(std::string fd_output, STRIPS_Problem &prob);
 
-void get_problem_description(std::string fd_output, STRIPS_Problem& prob);
-				     
-}
-}
+} // namespace FD_Parser
+} // namespace aptk
 
 #endif

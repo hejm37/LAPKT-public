@@ -30,212 +30,239 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <deque>
 #include <iosfwd>
 
-namespace aptk {
+namespace aptk
+{
 
-namespace agnostic {
+namespace agnostic
+{
 
-class Landmarks_Graph {
-public:
+class Landmarks_Graph
+{
+  public:
+	class Node
+	{
 
-	class Node {
-
-	public:
-		Node( unsigned p )
-		: m_fluent( p ), m_consumed( false ), m_consumed_once( false ) {
-		}
-	
-		~Node() {
-		}
-
-		void	add_precedent( Node* n ) {
-			m_preceded_by.push_back( n );
+	  public:
+		Node(unsigned p)
+			: m_fluent(p), m_consumed(false), m_consumed_once(false)
+		{
 		}
 
-		void	add_precedent_gn( Node* n ) {
-			m_preceded_by_gn.push_back( n );
+		~Node()
+		{
 		}
 
-		void	add_requiring( Node* n ) {
-			m_required_by.push_back( n );
+		void add_precedent(Node *n)
+		{
+			m_preceded_by.push_back(n);
 		}
 
-		void	add_requiring_gn( Node* n ) {
-			m_required_by_gn.push_back( n );
+		void add_precedent_gn(Node *n)
+		{
+			m_preceded_by_gn.push_back(n);
 		}
 
-		unsigned	fluent() const { return m_fluent; }
-		bool            is_consumed() const { return m_consumed; }
-		bool            is_consumed_once() const { return m_consumed_once; }
-		bool*           is_consumed_ptr() { return &m_consumed; }
-		void            consume(){ m_consumed = true; m_consumed_once = true; }
-		void            unconsume(){ m_consumed = false; }
-		bool            are_precedences_consumed() const{
-			if(  m_preceded_by.empty() ) return true;
-			for ( std::vector<Node* >::const_iterator it = m_preceded_by.begin(); it != m_preceded_by.end(); it++ )
-				if( !(*it)->is_consumed() )
+		void add_requiring(Node *n)
+		{
+			m_required_by.push_back(n);
+		}
+
+		void add_requiring_gn(Node *n)
+		{
+			m_required_by_gn.push_back(n);
+		}
+
+		unsigned fluent() const { return m_fluent; }
+		bool is_consumed() const { return m_consumed; }
+		bool is_consumed_once() const { return m_consumed_once; }
+		bool *is_consumed_ptr() { return &m_consumed; }
+		void consume()
+		{
+			m_consumed = true;
+			m_consumed_once = true;
+		}
+		void unconsume() { m_consumed = false; }
+		bool are_precedences_consumed() const
+		{
+			if (m_preceded_by.empty())
+				return true;
+			for (std::vector<Node *>::const_iterator it = m_preceded_by.begin(); it != m_preceded_by.end(); it++)
+				if (!(*it)->is_consumed())
 					return false;
 			return true;
 		}
 
-		bool            are_gn_precedences_consumed() const{
-			if(  m_preceded_by.empty() ) return true;
-			for ( std::vector<Node* >::const_iterator it = m_preceded_by_gn.begin(); it != m_preceded_by_gn.end(); it++ )
-				if( !(*it)->is_consumed() )
+		bool are_gn_precedences_consumed() const
+		{
+			if (m_preceded_by.empty())
+				return true;
+			for (std::vector<Node *>::const_iterator it = m_preceded_by_gn.begin(); it != m_preceded_by_gn.end(); it++)
+				if (!(*it)->is_consumed())
 					return false;
 			return true;
 		}
 
-		bool            are_requirements_consumed() const{
-			if(  m_required_by.empty() ) return true;
-			for ( std::vector<Node* >::const_iterator it = m_required_by.begin(); it != m_required_by.end(); it++ )
-				if( !(*it)->is_consumed() )
+		bool are_requirements_consumed() const
+		{
+			if (m_required_by.empty())
+				return true;
+			for (std::vector<Node *>::const_iterator it = m_required_by.begin(); it != m_required_by.end(); it++)
+				if (!(*it)->is_consumed())
 					return false;
 			return true;
 		}
 
-		bool            are_gn_requirements_consumed() const{
-			if(  m_required_by_gn.empty() ) return true;
-			for ( std::vector<Node* >::const_iterator it = m_required_by_gn.begin(); it != m_required_by_gn.end(); it++ )
-				if( !(*it)->is_consumed_once() )
+		bool are_gn_requirements_consumed() const
+		{
+			if (m_required_by_gn.empty())
+				return true;
+			for (std::vector<Node *>::const_iterator it = m_required_by_gn.begin(); it != m_required_by_gn.end(); it++)
+				if (!(*it)->is_consumed_once())
 					return false;
 			return true;
 		}
-		
-		const std::vector<Node* >&
-				preceded_by() const {
+
+		const std::vector<Node *> &
+		preceded_by() const
+		{
 			return m_preceded_by;
 		}
 
-		
-		bool		is_preceded_by( Node* nq)  const {
-			if(  m_preceded_by.empty() ) return false;
-			for ( std::vector<Node* >::const_iterator it = m_preceded_by.begin(); it != m_preceded_by.end(); it++ )
-				if( *it == nq )
+		bool is_preceded_by(Node *nq) const
+		{
+			if (m_preceded_by.empty())
+				return false;
+			for (std::vector<Node *>::const_iterator it = m_preceded_by.begin(); it != m_preceded_by.end(); it++)
+				if (*it == nq)
 					return true;
 			return false;
 		}
-		bool		is_preceded_by_gn( Node* nq)  const {
-			if(  m_preceded_by_gn.empty() ) return false;
-			for ( std::vector<Node* >::const_iterator it = m_preceded_by_gn.begin(); it != m_preceded_by_gn.end(); it++ )
-				if( *it == nq )
+		bool is_preceded_by_gn(Node *nq) const
+		{
+			if (m_preceded_by_gn.empty())
+				return false;
+			for (std::vector<Node *>::const_iterator it = m_preceded_by_gn.begin(); it != m_preceded_by_gn.end(); it++)
+				if (*it == nq)
 					return true;
 			return false;
 		}
 
-		bool		is_required_by( Node* nq)  const {
-			if(  m_required_by.empty() ) return false;
-			for ( std::vector<Node* >::const_iterator it = m_required_by.begin(); it != m_required_by.end(); it++ )
-				if( *it == nq )
+		bool is_required_by(Node *nq) const
+		{
+			if (m_required_by.empty())
+				return false;
+			for (std::vector<Node *>::const_iterator it = m_required_by.begin(); it != m_required_by.end(); it++)
+				if (*it == nq)
 					return true;
 			return false;
 		}
-	
-		bool		is_required_by_gn( Node* nq)  const {
-			if(  m_required_by_gn.empty() ) return false;
-			for ( std::vector<Node* >::const_iterator it = m_required_by_gn.begin(); it != m_required_by_gn.end(); it++ )
-				if( *it == nq )
+
+		bool is_required_by_gn(Node *nq) const
+		{
+			if (m_required_by_gn.empty())
+				return false;
+			for (std::vector<Node *>::const_iterator it = m_required_by_gn.begin(); it != m_required_by_gn.end(); it++)
+				if (*it == nq)
 					return true;
 			return false;
 		}
-		const std::vector<Node* >&
-				preceded_by_gn() const {
+		const std::vector<Node *> &
+		preceded_by_gn() const
+		{
 			return m_preceded_by_gn;
 		}
 
-		const std::vector<Node* >&
-				required_by() const {
+		const std::vector<Node *> &
+		required_by() const
+		{
 			return m_required_by;
 		}
 
-		const std::vector<Node* >&
-				required_by_gn() const {
+		const std::vector<Node *> &
+		required_by_gn() const
+		{
 			return m_required_by_gn;
 		}
 
-	private:
-		unsigned		m_fluent;
-		bool                    m_consumed;
-		bool                    m_consumed_once;
-		std::vector<Node* >	m_preceded_by;
-		std::vector<Node* >	m_preceded_by_gn;
-		std::vector<Node* >	m_required_by;
-		std::vector<Node* >	m_required_by_gn;
+	  private:
+		unsigned m_fluent;
+		bool m_consumed;
+		bool m_consumed_once;
+		std::vector<Node *> m_preceded_by;
+		std::vector<Node *> m_preceded_by_gn;
+		std::vector<Node *> m_required_by;
+		std::vector<Node *> m_required_by_gn;
 	};
 
-	Landmarks_Graph(const STRIPS_Problem& p);
+	Landmarks_Graph(const STRIPS_Problem &p);
 	~Landmarks_Graph();
 
-	bool				is_landmark( unsigned p ) const 	{ return m_fl_in_graph.isset(p); }
-	const Node*			node( unsigned p ) const 		{ return m_fl_to_node[p]; }
-	Node*   			node( unsigned p )      		{ return m_fl_to_node[p]; }
-	const std::vector< Node* >&	nodes(  )          		        { return m_lm_graph; }
-	void				preceding( unsigned p, Fluent_Vec& preceding ) const;
-	void				greedy_preceding( unsigned p, Fluent_Vec& greedy_preceding ) const;
-	void				following( unsigned p, Fluent_Vec& following ) const;
-	
-	void				add_landmark( unsigned p );
-	void				add_landmark_for( unsigned p, unsigned q );
+	bool is_landmark(unsigned p) const { return m_fl_in_graph.isset(p); }
+	const Node *node(unsigned p) const { return m_fl_to_node[p]; }
+	Node *node(unsigned p) { return m_fl_to_node[p]; }
+	const std::vector<Node *> &nodes() { return m_lm_graph; }
+	void preceding(unsigned p, Fluent_Vec &preceding) const;
+	void greedy_preceding(unsigned p, Fluent_Vec &greedy_preceding) const;
+	void following(unsigned p, Fluent_Vec &following) const;
 
-	void                            consume_node( unsigned p ){  m_fl_to_node[p]->consume(); }
-	void                            unconsume_node( unsigned p ){  m_fl_to_node[p]->unconsume(); }
+	void add_landmark(unsigned p);
+	void add_landmark_for(unsigned p, unsigned q);
 
-	void                            unconsume_all() {
-		for ( std::vector< Node* >::const_iterator it = m_lm_graph.begin(); it != m_lm_graph.end(); it++ )
+	void consume_node(unsigned p) { m_fl_to_node[p]->consume(); }
+	void unconsume_node(unsigned p) { m_fl_to_node[p]->unconsume(); }
+
+	void unconsume_all()
+	{
+		for (std::vector<Node *>::const_iterator it = m_lm_graph.begin(); it != m_lm_graph.end(); it++)
 			(*it)->unconsume();
 	}
 
-	void                            get_leafs( Fluent_Vec& leafs ){
+	void get_leafs(Fluent_Vec &leafs)
+	{
 
-		for ( std::vector< Node* >::const_iterator it = m_lm_graph.begin(); it != m_lm_graph.end(); it++ ) {
-			if( (*it)->is_consumed() ) continue;
-			if(  (*it)->are_precedences_consumed() )
-				leafs.push_back( (*it)->fluent() );				
+		for (std::vector<Node *>::const_iterator it = m_lm_graph.begin(); it != m_lm_graph.end(); it++)
+		{
+			if ((*it)->is_consumed())
+				continue;
+			if ((*it)->are_precedences_consumed())
+				leafs.push_back((*it)->fluent());
 		}
 	}
-	
 
-	unsigned			num_landmarks() const			{ return m_lm_graph.size(); }
-	unsigned			num_landmarks_and_edges() const		
-	{ 
-		unsigned val=0;
-		for ( std::vector< Node* >::const_iterator it = m_lm_graph.begin(); 
-		      it != m_lm_graph.end(); it++ ) {
-			Node* n = *it;			
+	unsigned num_landmarks() const { return m_lm_graph.size(); }
+	unsigned num_landmarks_and_edges() const
+	{
+		unsigned val = 0;
+		for (std::vector<Node *>::const_iterator it = m_lm_graph.begin();
+			 it != m_lm_graph.end(); it++)
+		{
+			Node *n = *it;
 			val++;
-			
 
-			if( !n->required_by_gn().empty() )
-				for( std::vector< Node* >::const_iterator it_r = n->required_by_gn().begin(); it_r != n->required_by_gn().end(); it_r++ )
+			if (!n->required_by_gn().empty())
+				for (std::vector<Node *>::const_iterator it_r = n->required_by_gn().begin(); it_r != n->required_by_gn().end(); it_r++)
 					val++;
-					
-			
 
-			if( ! n->required_by().empty() )
-				for( std::vector< Node* >::const_iterator it_r = n->required_by().begin(); it_r != n->required_by().end(); it_r++ )
-						val++;						
-				
-
-		}	
+			if (!n->required_by().empty())
+				for (std::vector<Node *>::const_iterator it_r = n->required_by().begin(); it_r != n->required_by().end(); it_r++)
+					val++;
+		}
 		return val;
 	}
-	
-	void				print( std::ostream& os ) const;
 
-	void				print_dot( std::ostream& os ) const;
+	void print(std::ostream &os) const;
 
-protected:
-	
-	const STRIPS_Problem&			m_strips_model;
-	std::vector< Node* >			m_lm_graph;
-	std::vector< Node* >			m_fl_to_node;
-	Bit_Set					m_fl_in_graph;
+	void print_dot(std::ostream &os) const;
+
+  protected:
+	const STRIPS_Problem &m_strips_model;
+	std::vector<Node *> m_lm_graph;
+	std::vector<Node *> m_fl_to_node;
+	Bit_Set m_fl_in_graph;
 };
 
+} // namespace agnostic
 
-
-
-}
-
-}
+} // namespace aptk
 
 #endif // landmark_graph.hxx

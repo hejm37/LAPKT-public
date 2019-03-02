@@ -23,17 +23,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 namespace aptk
 {
 
-Fluent::Fluent( STRIPS_Problem& p )
-	: m_problem( p ),
-	m_index( no_such_index ),
-	m_signature( "(not-a-fluent)" )
+Fluent::Fluent(STRIPS_Problem &p)
+	: m_problem(p),
+	  m_index(no_such_index),
+	  m_signature("(not-a-fluent)")
 {
-
 }
 
 Fluent::~Fluent()
 {
-
 }
 
-}
+} // namespace aptk

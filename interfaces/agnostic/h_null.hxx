@@ -26,37 +26,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <strips_state.hxx>
 #include <strips_prob.hxx>
 
-namespace aptk {
+namespace aptk
+{
 
-namespace agnostic {
+namespace agnostic
+{
 
-template < typename Search_Model >
-class	Null_Heuristic : public Heuristic<State> {
-public:
-
-	Null_Heuristic( const Search_Model& prob ) 
-	: Heuristic<State>( prob ), m_strips_model( prob.task() ) {
-	}	
-
-	virtual ~Null_Heuristic() {
+template <typename Search_Model>
+class Null_Heuristic : public Heuristic<State>
+{
+  public:
+	Null_Heuristic(const Search_Model &prob)
+		: Heuristic<State>(prob), m_strips_model(prob.task())
+	{
 	}
 
-	virtual void eval( const State& s, float& h_val ) {
+	virtual ~Null_Heuristic()
+	{
+	}
+
+	virtual void eval(const State &s, float &h_val)
+	{
 		h_val = 0.0f;
 	}
-	
-	virtual void eval( const State& s, float& h_val,  std::vector<Action_Idx>& pref_ops ) {
+
+	virtual void eval(const State &s, float &h_val, std::vector<Action_Idx> &pref_ops)
+	{
 		h_val = 0.0f;
 	}
 
-protected:
-
-	const STRIPS_Problem&	m_strips_model;
-
+  protected:
+	const STRIPS_Problem &m_strips_model;
 };
 
-}
+} // namespace agnostic
 
-}
+} // namespace aptk
 
 #endif // h_null.hxx

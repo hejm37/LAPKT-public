@@ -27,85 +27,88 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <set>
 
-namespace aptk {
+namespace aptk
+{
 
 class STRIPS_Problem;
 class State;
 class Action;
 
-namespace agnostic {
+namespace agnostic
+{
 
 // Match tree data structure from PRP ( https://bitbucket.org/haz/planner-for-relevant-policies )
-	
 
-class BaseNode {
-public:
+class BaseNode
+{
+  public:
 	virtual ~BaseNode() {}
-	virtual void dump( std::string indent, const STRIPS_Problem& prob ) const = 0;
-	virtual void generate_applicable_items( const State& s, std::vector<int>& actions ) = 0;
+	virtual void dump(std::string indent, const STRIPS_Problem &prob) const = 0;
+	virtual void generate_applicable_items(const State &s, std::vector<int> &actions) = 0;
 	virtual int count() const = 0;
-	
-	BaseNode *create_tree( std::vector<int>& actions, std::set<int> &vars_seen, const STRIPS_Problem& prob );
-	int get_best_var( std::vector<int>& actions, std::set<int> &vars_seen, const STRIPS_Problem& prob );
-	bool action_done( int action_id, std::set<int> &vars_seen, const STRIPS_Problem& prob );
+
+	BaseNode *create_tree(std::vector<int> &actions, std::set<int> &vars_seen, const STRIPS_Problem &prob);
+	int get_best_var(std::vector<int> &actions, std::set<int> &vars_seen, const STRIPS_Problem &prob);
+	bool action_done(int action_id, std::set<int> &vars_seen, const STRIPS_Problem &prob);
 };
 
-
-class SwitchNode : public BaseNode {
+class SwitchNode : public BaseNode
+{
 	int switch_var;
 	std::vector<int> immediate_items;
 	std::vector<BaseNode *> children;
-	BaseNode * default_child;
-	
-public:
-	SwitchNode( std::vector<int>& actions, std::set<int> &vars_seen, const STRIPS_Problem& prob );
-	virtual void generate_applicable_items( const State& s, std::vector<int>& actions );
-	virtual void dump( std::string indent, const STRIPS_Problem& prob ) const;
+	BaseNode *default_child;
+
+  public:
+	SwitchNode(std::vector<int> &actions, std::set<int> &vars_seen, const STRIPS_Problem &prob);
+	virtual void generate_applicable_items(const State &s, std::vector<int> &actions);
+	virtual void dump(std::string indent, const STRIPS_Problem &prob) const;
 	virtual int count() const;
 };
 
-
-class LeafNode : public BaseNode {
+class LeafNode : public BaseNode
+{
 	std::vector<int> applicable_items;
-public:
-	LeafNode( std::vector<int>& actions );
-	virtual void generate_applicable_items( const State& s, std::vector<int>& actions );
-	virtual void dump( std::string indent, const STRIPS_Problem& prob ) const;
+
+  public:
+	LeafNode(std::vector<int> &actions);
+	virtual void generate_applicable_items(const State &s, std::vector<int> &actions);
+	virtual void dump(std::string indent, const STRIPS_Problem &prob) const;
 	virtual int count() const { return applicable_items.size(); }
 };
 
-
-class EmptyNode : public BaseNode {
-public:
-	virtual void generate_applicable_items( const State &, std::vector<int>& ) {}
-	virtual void dump( std::string indent, const STRIPS_Problem& prob) const;
+class EmptyNode : public BaseNode
+{
+  public:
+	virtual void generate_applicable_items(const State &, std::vector<int> &) {}
+	virtual void dump(std::string indent, const STRIPS_Problem &prob) const;
 	virtual int count() const { return 0; }
 };
 
+class Match_Tree
+{
 
-class Match_Tree {
+  public:
+	Match_Tree(const STRIPS_Problem &prob) : m_problem(prob), root_node(nullptr) {}
 
-public:
-
-	Match_Tree ( const STRIPS_Problem& prob ) : m_problem( prob ), root_node(nullptr) {}
-
-	~Match_Tree() { if ( root_node != nullptr ) delete root_node; };
+	~Match_Tree()
+	{
+		if (root_node != nullptr)
+			delete root_node;
+	};
 
 	void build();
-	void retrieve_applicable( const State& s, std::vector<int>& actions ) const;
+	void retrieve_applicable(const State &s, std::vector<int> &actions) const;
 	int count() { return root_node->count(); }
 	void dump() { root_node->dump("", m_problem); }
 
-private:
-
-	const STRIPS_Problem& m_problem;
-	BaseNode * root_node;
-
+  private:
+	const STRIPS_Problem &m_problem;
+	BaseNode *root_node;
 };
 
+} // namespace agnostic
 
-}
-
-}
+} // namespace aptk
 
 #endif // match_tree.hxx

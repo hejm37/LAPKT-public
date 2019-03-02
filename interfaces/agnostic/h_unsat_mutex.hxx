@@ -27,65 +27,75 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <strips_prob.hxx>
 #include <h_2.hxx>
 
-namespace aptk {
+namespace aptk
+{
 
-namespace agnostic {
+namespace agnostic
+{
 
-template < typename Search_Model >
-class	Unsat_Goals_Mutexes_Heuristic : public Heuristic<State> {
-public:
+template <typename Search_Model>
+class Unsat_Goals_Mutexes_Heuristic : public Heuristic<State>
+{
+  public:
+	typedef H2_Heuristic<Search_Model, H2_Cost_Function::Zero_Costs> Mutex_Table;
 
-	typedef		H2_Heuristic< Search_Model, H2_Cost_Function::Zero_Costs >	Mutex_Table;
-
-	Unsat_Goals_Mutexes_Heuristic( const Search_Model& prob ) 
-	: Heuristic<State>( prob ), m_strips_model( prob.task() ), m_mutexes( prob ) {
-		State* init = prob.init();
+	Unsat_Goals_Mutexes_Heuristic(const Search_Model &prob)
+		: Heuristic<State>(prob), m_strips_model(prob.task()), m_mutexes(prob)
+	{
+		State *init = prob.init();
 		float dummy = 0.0f;
-		m_mutexes.eval( *init, dummy) ;
+		m_mutexes.eval(*init, dummy);
 		delete init;
-	}	
-
-	virtual ~Unsat_Goals_Mutexes_Heuristic() {
 	}
 
-	virtual void eval( const State& s, float& h_val ) {
+	virtual ~Unsat_Goals_Mutexes_Heuristic()
+	{
+	}
+
+	virtual void eval(const State &s, float &h_val)
+	{
 		h_val = count_mutexes(s) + count_goals(s);
 	}
-	
-	virtual void eval( const State& s, float& h_val,  std::vector<Action_Idx>& pref_ops ) {
+
+	virtual void eval(const State &s, float &h_val, std::vector<Action_Idx> &pref_ops)
+	{
 		h_val = count_mutexes(s) + count_goals(s);
 	}
 
-protected:
-
-	float 	count_mutexes( const State& s ) const {
+  protected:
+	float count_mutexes(const State &s) const
+	{
 		float count = 0.0f;
-		for ( unsigned i = 0; i < s.fluent_vec().size(); i++ ) {
-			for ( unsigned j = 0; j < s.fluent_vec().size(); j++ ) {
-				if ( m_mutexes.is_mutex( s.fluent_vec()[i], s.fluent_vec()[j] ) )
+		for (unsigned i = 0; i < s.fluent_vec().size(); i++)
+		{
+			for (unsigned j = 0; j < s.fluent_vec().size(); j++)
+			{
+				if (m_mutexes.is_mutex(s.fluent_vec()[i], s.fluent_vec()[j]))
 					count += 1.0f;
 			}
 		}
 		return count;
 	}
 
-	float	count_goals( const State& s ) const {
+	float count_goals(const State &s) const
+	{
 		float c = 0.0f;
-		for ( 	auto g_it = m_strips_model.goal().begin(); 
-			g_it != m_strips_model.goal().end(); g_it++ ) {
-			if ( !s.entails( *g_it) ) c += 1.0f;
+		for (auto g_it = m_strips_model.goal().begin();
+			 g_it != m_strips_model.goal().end(); g_it++)
+		{
+			if (!s.entails(*g_it))
+				c += 1.0f;
 		}
 		return c;
 	}
 
-protected:
-
-	const STRIPS_Problem&	m_strips_model;
-	Mutex_Table		m_mutexes;
+  protected:
+	const STRIPS_Problem &m_strips_model;
+	Mutex_Table m_mutexes;
 };
 
-}
+} // namespace agnostic
 
-}
+} // namespace aptk
 
 #endif

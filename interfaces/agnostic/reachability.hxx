@@ -26,39 +26,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <aptk/bit_set.hxx>
 #include <vector>
 
-namespace aptk {
+namespace aptk
+{
 
-namespace agnostic {
+namespace agnostic
+{
 
-	class	Reachability_Test {
-	public:
+class Reachability_Test
+{
+  public:
+	Reachability_Test(const STRIPS_Problem &p);
+	~Reachability_Test();
 
-		Reachability_Test( const STRIPS_Problem& p );
-		~Reachability_Test();
+	// Returns true if atom set g is reachable from state s
+	bool is_reachable(const Fluent_Vec &s, const Fluent_Vec &g);
+	// Returns true if atom set g is reachable from s, when removing action
+	bool is_reachable(const Fluent_Vec &s, const Fluent_Vec &g, unsigned action);
+	bool is_reachable(const Fluent_Vec &s, const Fluent_Vec &g, const Bit_Set &excluded);
+	void get_reachable_actions(const Fluent_Vec &s, const Fluent_Vec &g, Bit_Set &reach_actions);
 
-		// Returns true if atom set g is reachable from state s 
-		bool	is_reachable( const Fluent_Vec& s, const Fluent_Vec& g );
-		// Returns true if atom set g is reachable from s, when removing action
-		bool	is_reachable( const Fluent_Vec& s, const Fluent_Vec& g, unsigned action );
-		bool 	is_reachable( const Fluent_Vec& s, const Fluent_Vec& g, const Bit_Set& excluded );
-		void	get_reachable_actions( const Fluent_Vec& s, const Fluent_Vec& g,  Bit_Set& reach_actions );
-	protected:
+  protected:
+	bool apply_actions();
+	void initialize(const Fluent_Vec &s);
+	bool check(const Fluent_Vec &set);
 
-		bool	apply_actions();
-		void	initialize( const Fluent_Vec& s );
-		bool	check( const Fluent_Vec& set );
+	void print_reachable_atoms();
 
-		void	print_reachable_atoms();
-	protected:
+  protected:
+	const STRIPS_Problem &m_problem;
+	std::vector<bool> m_reachable_atoms;
+	std::vector<bool> m_reach_next;
+	Bit_Set m_action_mask;
+};
 
-		const STRIPS_Problem&		m_problem;
-		std::vector<bool>	m_reachable_atoms;
-		std::vector<bool>	m_reach_next;
-		Bit_Set			m_action_mask;		
-	};
+} // namespace agnostic
 
-}
-
-}
+} // namespace aptk
 
 #endif // reachability.hxx

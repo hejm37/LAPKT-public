@@ -29,48 +29,46 @@ namespace aptk
 
 class Fluent
 {
-public:
-
-	Fluent( STRIPS_Problem& p );
+  public:
+	Fluent(STRIPS_Problem &p);
 	~Fluent();
 
-	unsigned	index() const;
-	std::string	signature() const;
-	Index_Vec&	pddl_objs_idx();
-	Index_Vec&	pddl_types_idx();
+	unsigned index() const;
+	std::string signature() const;
+	Index_Vec &pddl_objs_idx();
+	Index_Vec &pddl_types_idx();
 
-	void		set_index( unsigned idx );
-	void		set_signature( std::string signature );
+	void set_index(unsigned idx);
+	void set_signature(std::string signature);
 
-	STRIPS_Problem& problem();
+	STRIPS_Problem &problem();
 
-protected:
-
-	STRIPS_Problem&			m_problem;
-	unsigned			m_index;
-	std::string			m_signature;
+  protected:
+	STRIPS_Problem &m_problem;
+	unsigned m_index;
+	std::string m_signature;
 };
 
-inline unsigned		Fluent::index() const
+inline unsigned Fluent::index() const
 {
 	return m_index;
 }
 
-inline	std::string	Fluent::signature() const
+inline std::string Fluent::signature() const
 {
 	return m_signature;
 }
 
-inline void	Fluent::set_index( unsigned idx ) 
+inline void Fluent::set_index(unsigned idx)
 {
 	m_index = idx;
 }
 
-inline void	Fluent::set_signature( std::string sig )
+inline void Fluent::set_signature(std::string sig)
 {
 	m_signature = sig;
 }
 
-}
+} // namespace aptk
 
 #endif // Fluent.hxx

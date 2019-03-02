@@ -27,72 +27,78 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <strips_state.hxx>
 
-namespace aptk {
+namespace aptk
+{
 
 class State;
 
-namespace agnostic {
+namespace agnostic
+{
 
-
-class Fwd_Search_Problem : public Search_Problem<State> {
+class Fwd_Search_Problem : public Search_Problem<State>
+{
 public:
-
-	Fwd_Search_Problem( STRIPS_Problem* );
+	Fwd_Search_Problem(STRIPS_Problem *);
 	virtual ~Fwd_Search_Problem();
 
-	virtual	int		num_actions() const;
-	virtual State*		make_state( const Fluent_Vec& s ) const;
-	virtual State*		init() const;
-	virtual bool		goal( const State& s ) const;
-	bool	                lazy_goal( const State& s, Action_Idx a  ) const;
-	virtual bool		is_applicable( const State& s, Action_Idx a ) const;
-	virtual void		applicable_set( const State& s, std::vector<Action_Idx>& app_set ) const;
-	virtual void		applicable_set_v2( const State& s, std::vector<Action_Idx>& app_set ) const;	
-	virtual float		cost( const State& s, Action_Idx a ) const;
-        virtual State*		next( const State& s, Action_Idx a, Fluent_Vec* added, Fluent_Vec* deleted ) const;
-    virtual State*		next( const State& s, Action_Idx a ) const;
-	virtual void		print( std::ostream& os ) const;
+	virtual int num_actions() const;
+	virtual State *make_state(const Fluent_Vec &s) const;
+	virtual State *init() const;
+	virtual bool goal(const State &s) const;
+	bool lazy_goal(const State &s, Action_Idx a) const;
+	virtual bool is_applicable(const State &s, Action_Idx a) const;
+	virtual void applicable_set(const State &s, std::vector<Action_Idx> &app_set) const;
+	virtual void applicable_set_v2(const State &s, std::vector<Action_Idx> &app_set) const;
+	virtual float cost(const State &s, Action_Idx a) const;
+	virtual State *next(const State &s, Action_Idx a, Fluent_Vec *added, Fluent_Vec *deleted) const;
+	virtual State *next(const State &s, Action_Idx a) const;
+	virtual void print(std::ostream &os) const;
 
-	STRIPS_Problem&		task() 		{ return *m_task; }
-	const STRIPS_Problem&	task() const 	{ return *m_task; }
+	STRIPS_Problem &task() { return *m_task; }
+	const STRIPS_Problem &task() const { return *m_task; }
 
-	class Action_Iterator {
+	class Action_Iterator
+	{
 	public:
-		Action_Iterator( const Fwd_Search_Problem& p )
-		  :       m_problem(p) {
-		}
-        
-		~Action_Iterator() {
+		Action_Iterator(const Fwd_Search_Problem &p)
+				: m_problem(p)
+		{
 		}
 
-		int	start( const State& s ) {
+		~Action_Iterator()
+		{
+		}
+
+		int start(const State &s)
+		{
 			m_app_set.clear();
-			m_problem.applicable_set_v2( s, m_app_set );
+			m_problem.applicable_set_v2(s, m_app_set);
 			m_it = m_app_set.begin();
-			if ( m_it == m_app_set.end() ) return no_op;
+			if (m_it == m_app_set.end())
+				return no_op;
 			return *m_it;
 		}
-	
-		int	next() {
+
+		int next()
+		{
 			m_it++;
-			if ( m_it == m_app_set.end() ) return no_op;
+			if (m_it == m_app_set.end())
+				return no_op;
 			return *m_it;
-		}	
-	
+		}
+
 	private:
-		const Fwd_Search_Problem& 		m_problem;
-		std::vector<Action_Idx>			m_app_set;
-		std::vector<Action_Idx>::iterator	m_it;
- 	};
+		const Fwd_Search_Problem &m_problem;
+		std::vector<Action_Idx> m_app_set;
+		std::vector<Action_Idx>::iterator m_it;
+	};
 
 private:
-
-	STRIPS_Problem*		m_task;
-	
+	STRIPS_Problem *m_task;
 };
 
-}
+} // namespace agnostic
 
-}
+} // namespace aptk
 
 #endif // fwd_search_prob.hxx

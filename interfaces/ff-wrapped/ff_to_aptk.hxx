@@ -30,13 +30,13 @@ namespace aptk
 
 namespace FF_Parser
 {
-	void get_problem_description( 	std::string pddl_domain_path,
-					std::string pddl_problem_path,
-					STRIPS_Problem& strips_problem,
-					bool ignore_action_costs = false,
-					bool get_detailed_fluent_names = false );
+void get_problem_description(std::string pddl_domain_path,
+							 std::string pddl_problem_path,
+							 STRIPS_Problem &strips_problem,
+							 bool ignore_action_costs = false,
+							 bool get_detailed_fluent_names = false);
 }
 
-}
+} // namespace aptk
 
 #endif // FF_PDDL_To_STRIPS.hxx

@@ -27,87 +27,90 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <functional>
 #include <memory>
 
-namespace aptk {
+namespace aptk
+{
 
 class STRIPS_Problem;
 class State;
 class Action;
 
-
-class WatchedLitSuccGen {
-public:
-
-	struct watcher {
-		unsigned op:16;
-		unsigned blocker:16;
-		bool triggers(const STRIPS_Problem& prob, const State& s) const;
+class WatchedLitSuccGen
+{
+  public:
+	struct watcher
+	{
+		unsigned op : 16;
+		unsigned blocker : 16;
+		bool triggers(const STRIPS_Problem &prob, const State &s) const;
 	};
 
-	WatchedLitSuccGen(STRIPS_Problem& prob);
+	WatchedLitSuccGen(STRIPS_Problem &prob);
 
 	void init();
 
-	unsigned filter(std::function<bool(Action*)> is_mutex);
-	
-	const std::vector<watcher>& operator[](unsigned f) const {
+	unsigned filter(std::function<bool(Action *)> is_mutex);
+
+	const std::vector<watcher> &operator[](unsigned f) const
+	{
 		return watchers[f];
 	}
-	std::vector<watcher>& operator[](unsigned f) {
+	std::vector<watcher> &operator[](unsigned f)
+	{
 		return watchers[f];
 	}
 
 	unsigned size() const { return watchers.size(); }
 
-	struct iterator {
-		const WatchedLitSuccGen& w;
-		const State& s;
+	struct iterator
+	{
+		const WatchedLitSuccGen &w;
+		const State &s;
 		int s_offset;
 		int w_offset;
 
-		iterator(const WatchedLitSuccGen& w, const State& s, unsigned s_offset = 0)
-			: w(w), s(s), s_offset(0), w_offset(-1){ ++*this; }
+		iterator(const WatchedLitSuccGen &w, const State &s, unsigned s_offset = 0)
+			: w(w), s(s), s_offset(0), w_offset(-1) { ++*this; }
 
-		iterator& operator++();
-		
+		iterator &operator++();
+
 		unsigned operator*() const;
 
 		bool finished() const;
 	};
 
-	iterator applicable_actions(const aptk::State& s) const {
+	iterator applicable_actions(const aptk::State &s) const
+	{
 		return iterator(*this, s);
 	}
 
-	void applicable_actions(const State& s, std::vector<int>& actions) const;
-
+	void applicable_actions(const State &s, std::vector<int> &actions) const;
 
 	// Map the update function over every watcher watching f.
 	// If update returns true, the watcher will be moved to
 	// some other fluent not true in s.
-	void map_watching(const State& s, unsigned f, std::function<bool(watcher&)> update);
+	void map_watching(const State &s, unsigned f, std::function<bool(watcher &)> update);
 
 	// A filter is called with an operator and a (delete relaxed)
 	// state in which it is applicable.
 	// It should return true if the operator should be applied.
-	typedef std::function<bool(unsigned, const State&)> filter_t;
+	typedef std::function<bool(unsigned, const State &)> filter_t;
 
 	// Compute the fixpoint of delete-relaxed reachability.
 	// If a filter is specified, only operators returning true will be applied.
 	// Note this modifies the state argument.
-	bool reachable(State& s0);
-	bool reachable(State& s0, filter_t filter);
-	bool reachable(State& s0, unsigned q0, filter_t filter);
+	bool reachable(State &s0);
+	bool reachable(State &s0, filter_t filter);
+	bool reachable(State &s0, unsigned q0, filter_t filter);
 
-	bool is_reachable(const State& s0);
-	bool is_reachable(const State& s0, filter_t filter);
+	bool is_reachable(const State &s0);
+	bool is_reachable(const State &s0, filter_t filter);
 
-private:
+  private:
+	void update_watcher(watcher &w, unsigned f, const State &s);
 
-	void update_watcher(watcher& w, unsigned f, const State& s);
-
-	STRIPS_Problem& prob;
-	std::vector< std::vector<watcher> > watchers;
+	STRIPS_Problem &prob;
+	std::vector<std::vector<watcher>> watchers;
 	std::unique_ptr<State> state_fixpoint;
 };
-}
+} // namespace aptk
 #endif
